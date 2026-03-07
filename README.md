@@ -1,4 +1,4 @@
-# GZDoom-PipeAPI
+# Powershell-GZDoom_PipeAPI
  - Windows Powershell library for interfacing with External-Pipe modded GZDoom
  - These give you access to the GET, SET, and COMMAND instructions as defined in externalpipe.cpp/.h
  - This is the heart of the data transfer
