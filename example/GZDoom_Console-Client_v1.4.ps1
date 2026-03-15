@@ -86,20 +86,30 @@ if ($Global:NamedPipe_Client_ConnectedToServer) {
 Write-Host "[Startup]: Starting main loop..." -ForegroundColor White
 try {
     while ($true) {
-		$userCommandPromptString = "[Main Loop]: Enter Command (exit|"
+		$userCommandPromptString = "[Main Loop]: Enter Command (exit"
 		$debuggingActive = $Global:NamedPipe_Client_Debug -and $Global:GZDoom_PipeAPI_Debug
-		$userCommandPromptString += "debug=$($debuggingActive)|"
+		$userCommandPromptString += "|debug=$($debuggingActive)"
 		if ($Global:NamedPipe_Client_ConnectedToServer -ne $true) {
 			Write-Host "[Main Loop]: The Pipe connection isn't made, but you can 'open' it at any time." -ForegroundColor Yellow
-			$userCommandPromptString += "open)> "
+			$userCommandPromptString += "|open)> "
 			
 		} else {
 			Write-Host "[Main Loop]: Since the Pipe is Connected, you can initiate a command to GZDoom." -ForegroundColor Green
 			Write-Host "[Main Loop]: Type 'get' to emulate the 'GET <cvarName>' GZDoom console command, and update the local copy." -ForegroundColor Cyan
+			$userCommandPromptString += "|get"
 			Write-Host "[Main Loop]: Type 'set' to emulate the 'SET <cvarName> <cvarValue>' GZDoom console command, and update the local copy." -ForegroundColor Cyan
+			$userCommandPromptString += "|set"
 			Write-Host "[Main Loop]: Type 'console' to send a command verbatim to the GZDoom console, as if it was typed." -ForegroundColor Cyan
-			#$userCommandPromptString += "peek|read|pull|close)> "
-			$userCommandPromptString += "get|set|console|close)> "
+			$userCommandPromptString += "|console"
+			Write-Host "[Main Loop]: Type 'peek' to check the streamReader buffer and report how many bytes of data are present." -ForegroundColor Cyan
+			$userCommandPromptString += "|peek"
+			Write-Host "[Main Loop]: Type 'read' to check the streamReader buffer and get any if present." -ForegroundColor Cyan
+			$userCommandPromptString += "|read"
+			Write-Host "[Main Loop]: Type 'pull' to send a request to the server and read a response." -ForegroundColor Cyan
+			$userCommandPromptString += "|pull"
+			Write-Host "[Main Loop]: Type 'close' to terminate the connection to the Named Pipe Server."
+			$userCommandPromptString += "|close"
+			$userCommandPromptString += ")> "
 		}
 		Write-Host -NoNewline $userCommandPromptString
 		$cmd = Read-Host
@@ -160,6 +170,17 @@ try {
 				$commandStringToExecute = Read-Host
 				Write-Host "[COMMAND]: Sending ' $($commandStringToExecute) ' to GZDoom..."
 				$commandResult = GZDoom_PipeAPI_CONSOLE_COMMAND -commandString $commandStringToExecute
+			} elseif ($cmd -eq 'peek') { 
+				$bytes = NamedPipe_Client_PeekAtServer 
+				Write-Host "[Peek]: $($bytes) available to read from Server."
+			} elseif ($cmd -eq 'read') { 
+				$Global:NamedPipe_Server_Data = NamedPipe_Client_ReadFromServer 
+				Write-Host "[Read]: Data: $($Global:NamedPipe_Server_Data)"
+			} elseif ($cmd -eq 'pull') {
+				Write-Host -NoNewLine "[Pull]: Enter Request to Server> "
+				$Global:NamedPipe_Client_Data = Read-Host
+				$Global:NamedPipe_Server_Data = NamedPipe_Client_PullServerData -requestString $Global:NamedPipe_Client_Data
+				Write-Host "[Pull]: Response: $($Global:NamedPipe_Server_Data)"
 			} else {
 				Write-Host "[Invalid Command]"
 			}
