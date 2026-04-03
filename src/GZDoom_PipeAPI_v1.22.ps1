@@ -281,9 +281,6 @@ function GZDoom_PipeAPI_CVAR_SET {
 	} elseif ($cvarValue -eq $null) {
 		Write-Host "[GZDoom_PipeAPI_CVAR_SET]: FAULT - null cvarValue" -ForegroundColor Red
 		return $false
-	} elseif ($cvarValue -eq "") {
-		Write-Host "[GZDoom_PipeAPI_CVAR_SET]: FAULT - empty cvarValue" -ForegroundColor Red
-		return $false
 	}
 	$cvarName = [string]$cvarName
 	$cvarValue = [string]$cvarValue
@@ -351,7 +348,9 @@ function GZDoom_PipeAPI_CVAR_SET {
 			$null = $GZDoom_PipeAPI_SET_Response_String -match $GZDoom_PipeAPI_CMD_CVAR_SET_Response_RegexPattern
 			$Global:GZDoom_PipeAPI_CMD_CVAR_SET_Name  = $Matches[1]
 			$Global:GZDoom_PipeAPI_CMD_CVAR_SET_Value_String = $Matches[2]
-			if ($Global:GZDoom_PipeAPI_Debug) { Write-Host "[GZDoom_PipeAPI_CVAR_SET]: Response CVAR Name: $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Name" }
+			if ($Global:GZDoom_PipeAPI_Debug) { 
+				Write-Host "[GZDoom_PipeAPI_CVAR_SET]: Response CVAR Name: $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Name"
+				Write-Host "[GZDoom_PipeAPI_CVAR_SET]: Response CVAR Value: $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Value_String" }
 			$GZDoom_SET_Response_CVAR_Name_Mismatch = ($cvarName -ne $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Name)
 			# Exit if names don't match
 			if ($GZDoom_SET_Response_CVAR_Name_Mismatch) {
@@ -361,9 +360,7 @@ function GZDoom_PipeAPI_CVAR_SET {
 			}
 			$GZDoom_SET_Response_CVAR_Name_Matches_Request = ($cvarName -eq $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Name)
 			if ($GZDoom_SET_Response_CVAR_Name_Matches_Request) {
-				if ($Global:GZDoom_PipeAPI_Debug) { 
-					Write-Host "[GZDoom_PipeAPI_CVAR_SET]: Response CVAR Name: $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Name"
-					Write-Host "[GZDoom_PipeAPI_CVAR_SET]: Response CVAR Value: $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Value_String" }
+				if ($Global:GZDoom_PipeAPI_Debug) { Write-Host "[GZDoom_PipeAPI_CVAR_SET]: Response CVAR Value: $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Value_String" }
 				$GZDoom_SET_Response_CVAR_Value_Mismatch = ($cvarValue -ne $Global:GZDoom_PipeAPI_CMD_CVAR_SET_Value_String)
 				if ($GZDoom_SET_Response_CVAR_Value_Mismatch) {
 					Write-Host "[GZDoom_PipeAPI_CVAR_SET]: WARNING - CVAR Value in response DOES NOT match CVAR Value sent!" -ForegroundColor Yellow
