@@ -22,4 +22,5 @@
  - parse_CMD_CONSOLE_COMMAND_Response_from_GZDoom
 
 ## Versioning
+ - v1.22: Updated Start-up function, NamedPipe_Client changed to v1.10
  - v1.0: Initial Release
